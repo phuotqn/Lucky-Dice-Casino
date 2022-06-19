@@ -108,14 +108,14 @@ const deleteVoucherHistory = (request,response) => {
 }
 const getVoucherHistory = (request,response) => {
     let username = request.query.username;
-    userModel.find({ username: request.query.userName }).lean().exec(function (error, histories) {
+    userModel.find({ username: request.query.username }).lean().exec(function (error, histories) {
         for (let bI = 0; bI < histories.length; bI++) {
             // B2: Validate dữ liệu
             // B3: tương tác với cơ sở dữ liệu
             let condition = {};
             condition.user = histories[bI]._id;
             console.log(condition)
-            voucherHistoryModel.find(condition, (error, data) => {
+            voucherHistoryModel.find(condition).populate("voucher").exec((error, data) => {
                 if (error) {
                     return response.status(500).json({
                         status: "Không tìm thấy User",

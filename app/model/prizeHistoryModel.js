@@ -11,7 +11,7 @@ const prizeHistoryModel = new Schema({
     },
     prize: {
         type: mongoose.Types.ObjectId,
-        ref:"voucher",
+        ref:"prize",
        
     },
     createdAt: {

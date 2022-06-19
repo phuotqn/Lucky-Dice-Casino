@@ -109,9 +109,12 @@
         <div class="form-group">
             <div class="row text-center">
                 <div class="col-12 ">
-                    <input id="btn-dice-history" class="btn btn-primary button-width w-25" value="Dice History" type="button">
-                    <input id="btn-voucher-history" class="btn btn-success button-width w-25" value="Voucher History" type="button">
-                    <input id="btn-present-history" class="btn btn-success button-width w-25" value="Present History" type="button">
+                    <input id="btn-dice-history" class="btn btn-primary button-width w-25" value="Dice History"
+                        type="button">
+                    <input id="btn-voucher-history" class="btn btn-success button-width w-25" value="Voucher History"
+                        type="button">
+                    <input id="btn-present-history" class="btn btn-success button-width w-25" value="Present History"
+                        type="button">
                 </div>
             </div>
         </div>
@@ -167,14 +170,14 @@
 
     // Tạo biến toàn cực đối tượng để truyền dữ liệu giữa các bước
     const gUserObj = {
-            username: "",
-            firstname: "",
-            lastname: ""
-        }
-        /*** REGION 2 - Vùng gán / thực thi sự kiện cho các elements */
+        username: "",
+        firstname: "",
+        lastname: ""
+    }
+    /*** REGION 2 - Vùng gán / thực thi sự kiện cho các elements */
 
-    $(document).ready(function() {
-        $('#btn-dice').on('click', function() {
+    $(document).ready(function () {
+        $('#btn-dice').on('click', function () {
             onBtnNemClick()
         })
 
@@ -184,7 +187,7 @@
 
         //  Bước 1 :  Thu thập dữ liệu
         getData(gUserObj)
-            //    Bước 2 : Kiểm tra dữ liệu
+        //    Bước 2 : Kiểm tra dữ liệu
         var vIsCheck = validateData(gUserObj);
         if (vIsCheck) {
 
@@ -195,7 +198,74 @@
 
 
     // hàm sự kiện nút lịch sử tung xúc xắc
-    $('#btn-dice-history').on('click', function() {
+    $('#btn-voucher-history').on('click', function () {
+
+        console.log("%c Nút Voucher History được ấn", "color:green");
+
+        // khi ấn nút sẽ xóa dữ liệu có sẵn trong bảng
+        var vTable = document.getElementById("history-placeholder-table")
+
+        while (vTable.rows.length > 1) {
+            vTable.deleteRow(1);
+        }
+        //  Bước 1 :  Thu thập dữ liệu
+        getData(gUserObj);
+        //    Bước 2 : Kiểm tra dữ liệu
+        var vIsCheck = validateData(gUserObj);
+        if (vIsCheck) {
+
+            var vXmlHttpVoucherHistory = new XMLHttpRequest();
+            //   Bước 3 : gọi API sever
+
+            callVoucherHistory(vXmlHttpVoucherHistory, gUserObj);
+
+            vXmlHttpVoucherHistory.onreadystatechange = function () {
+                if (this.readyState == gREQUEST_READY_STATUS_FINISH_AND_OK && this.status == gREQUEST_STATUS_OK) { // Nếu nhận trạng thái của reponse ready và ok
+                    //   Bước 4 : xử lý response trả về sever
+                    console.log(vXmlHttpVoucherHistory.responseText);
+                    var vReponsiveHistoryDice = JSON.parse(vXmlHttpVoucherHistory.responseText);
+                    console.log(vReponsiveHistoryDice);
+                    showVoucherHistory(vReponsiveHistoryDice);
+                }
+            }
+        }
+
+    });
+    // Btn voucher
+    $('#btn-present-history').on('click', function () {
+
+        console.log("%c Nút Dice History được ấn", "color:red");
+
+        // khi ấn nút sẽ xóa dữ liệu có sẵn trong bảng
+        var vTable = document.getElementById("history-placeholder-table")
+
+        while (vTable.rows.length > 1) {
+            vTable.deleteRow(1);
+        }
+        //  Bước 1 :  Thu thập dữ liệu
+        getData(gUserObj);
+        //    Bước 2 : Kiểm tra dữ liệu
+        var vIsCheck = validateData(gUserObj);
+        if (vIsCheck) {
+
+            var vXmlHttpVoucherHistory = new XMLHttpRequest();
+            //   Bước 3 : gọi API sever
+
+            callPresentHistory(vXmlHttpVoucherHistory, gUserObj);
+
+            vXmlHttpVoucherHistory.onreadystatechange = function () {
+                if (this.readyState == gREQUEST_READY_STATUS_FINISH_AND_OK && this.status == gREQUEST_STATUS_OK) { // Nếu nhận trạng thái của reponse ready và ok
+                    //   Bước 4 : xử lý response trả về sever
+                    console.log(vXmlHttpVoucherHistory.responseText);
+                    var vReponsiveHistoryDice = JSON.parse(vXmlHttpVoucherHistory.responseText);
+                    console.log(vReponsiveHistoryDice);
+                    showPresentHistory(vReponsiveHistoryDice);
+                }
+            }
+        }
+
+    });
+    $('#btn-dice-history').on('click', function () {
 
         console.log("%c Nút Dice History được ấn", "color:red");
 
@@ -216,7 +286,7 @@
 
             callApiHistoryDice(vXmlHttpVoucherHistory, gUserObj);
 
-            vXmlHttpVoucherHistory.onreadystatechange = function() {
+            vXmlHttpVoucherHistory.onreadystatechange = function () {
                 if (this.readyState == gREQUEST_READY_STATUS_FINISH_AND_OK && this.status == gREQUEST_STATUS_OK) { // Nếu nhận trạng thái của reponse ready và ok
                     //   Bước 4 : xử lý response trả về sever
                     console.log(vXmlHttpVoucherHistory.responseText);
@@ -299,13 +369,13 @@
             type: "POST",
             contentType: "application/json;charset=UTF-8",
             data: JSON.stringify(paramDataUser),
-            success: function(response) {
+            success: function (response) {
                 console.log(response);
 
                 //Hiển thị
                 processResponse(response);
             },
-            error: function(ajaxContent) {
+            error: function (ajaxContent) {
                 console.log(ajaxContent);
             }
         })
@@ -402,7 +472,7 @@
         var vTenPhanThuong = paramResponePrize.prize.name;
         switch (vTenPhanThuong) {
             case null:
-            vImgPresent.attr("src", "LuckyDiceImages/no-present.jpg");
+                vImgPresent.attr("src", "LuckyDiceImages/no-present.jpg");
                 break;
             case "Mũ":
                 vImgPresent.attr("src", "LuckyDiceImages/hat.jpg");
@@ -451,6 +521,64 @@
             // hiển thị ra HTML
             vNewNumCells.innerHTML = bI + 1;
             vNewDiceCells.innerHTML = paramResposeDiceHistory.data[bI].dice;
+        }
+    }
+
+    function callPresentHistory(paramXmlHttpDiceHistory, paramDataUser) {
+        paramXmlHttpDiceHistory.open("GET", vBASE_URL + "/prizeHistory?username=" + paramDataUser.username, true)
+        paramXmlHttpDiceHistory.setRequestHeader("Content-Type", vUTF8_TEXT_APPLICATION_HEADER);
+        paramXmlHttpDiceHistory.send(JSON.stringify(paramDataUser)); //    Chuyển JSON object sang string
+    }
+
+    // Hàm hiển thị lịch sử tung xúc xắc
+    function showPresentHistory(paramResponse) {
+
+        // Table Header
+        var vTable = document.getElementById("history-placeholder-table");
+        vTable.rows[0].cells[0].innerHTML = "Lượt";
+        vTable.rows[0].cells[1].innerHTML = "Kết quả";
+
+        // hiển thị lịch sử ra tbody
+        var vTbody = vTable.getElementsByTagName("tbody")[0];
+        vTbody.innerHTML = "";
+
+        for (let bI = 0; bI < paramResponse.data.length; bI++) {
+            var vNewRow = vTbody.insertRow(-1);
+            var vNewNumCells = vNewRow.insertCell(0);
+            var vNewDiceCells = vNewRow.insertCell(1);
+
+            // hiển thị ra HTML
+            vNewNumCells.innerHTML = bI + 1;
+            vNewDiceCells.innerHTML = paramResponse.data[bI].prize.name;
+        }
+    };
+
+    function callVoucherHistory(paramXmlHttpDiceHistory, paramDataUser) {
+        paramXmlHttpDiceHistory.open("GET", vBASE_URL + "/voucher-history?username=" + paramDataUser.username, true)
+        paramXmlHttpDiceHistory.setRequestHeader("Content-Type", vUTF8_TEXT_APPLICATION_HEADER);
+        paramXmlHttpDiceHistory.send(JSON.stringify(paramDataUser)); //    Chuyển JSON object sang string
+    }
+
+    // Hàm hiển thị lịch sử tung xúc xắc
+    function showVoucherHistory(paramResponse) {
+
+        // Table Header
+        var vTable = document.getElementById("history-placeholder-table");
+        vTable.rows[0].cells[0].innerHTML = "Mã voucher";
+        vTable.rows[0].cells[1].innerHTML = "Phần trăm giảm giá";
+
+        // hiển thị lịch sử ra tbody
+        var vTbody = vTable.getElementsByTagName("tbody")[0];
+        vTbody.innerHTML = "";
+
+        for (let bI = 0; bI < paramResponse.data.length; bI++) {
+            var vNewRow = vTbody.insertRow(-1);
+            var vNewNumCells = vNewRow.insertCell(0);
+            var vNewDiceCells = vNewRow.insertCell(1);
+
+            // hiển thị ra HTML
+            vNewNumCells.innerHTML = paramResponse.data[bI].voucher.code;
+            vNewDiceCells.innerHTML = paramResponse.data[bI].voucher.discount;
         }
     }
 </script>
